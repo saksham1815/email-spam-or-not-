@@ -1,21 +1,19 @@
 import streamlit as st
 import pickle
 import string
-from nltk.corpus import stopwords
 import nltk
-from nltk.stem.porter import PorterStemmer
 import os
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+
+# Set a custom NLTK data directory
+NLTK_DATA_PATH = os.path.join(os.getcwd(), "nltk_data")
+os.makedirs(NLTK_DATA_PATH, exist_ok=True)
+nltk.data.path.append(NLTK_DATA_PATH)
 
 # Ensure NLTK data is downloaded and accessible
-# try:
-nltk.data.find('tokenizers/punkt')
-# except LookupError:
-nltk.download('punkt')  # Download punkt tokenizer data
-
-# try:
-nltk.data.find('corpora/stopwords')
-# except LookupError:
-nltk.download('stopwords')
+nltk.download('punkt', download_dir=NLTK_DATA_PATH)
+nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
 
 # Initialize PorterStemmer
 ps = PorterStemmer()
@@ -29,7 +27,8 @@ def transform_text(text):
     y = [i for i in text if i.isalnum()]
 
     # Remove stopwords and punctuation
-    y = [i for i in y if i not in stopwords.words('english') and i not in string.punctuation]
+    stop_words = set(stopwords.words('english'))
+    y = [i for i in y if i not in stop_words and i not in string.punctuation]
 
     # Perform stemming
     y = [ps.stem(i) for i in y]
